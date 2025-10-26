@@ -86,9 +86,7 @@ License
 This project is released under the MIT License. See LICENSE file for details.
 
 Contributors  
-Team Grab (Grab AI National Hackathon 2025 Semi-Finalists)  
-• Anish Kishore  
-• [Your teammate names if you wish to include them]  
+Team Grab (Grab AI National Hackathon 2025 Semi-Finalists)    
 
 Repository Link  
 https://github.com/heynintendo/NovaScore-Credit-Scoring-System
