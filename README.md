@@ -1,92 +1,66 @@
-NovaScore: AI-Driven Credit Scoring System  
---------------------------------------------------
+NovaScore Credit Scoring System Team Grabbbb — Grab AI National Hackathon 2025, National Semifinalists
+------------------------------------------------------------------------------------------------------
 
-Overview  
-NovaScore is an intelligent credit scoring framework designed to evaluate creditworthiness of ride-sharing users using real transactional and behavioral data.  
-This system was built during the Grab AI National Hackathon 2025, where our team, Team Grab, reached the national semi-finals after successfully qualifying through three competitive rounds.  
-The project combines data science, graph learning, and deep tabular modeling to deliver an interpretable and fair credit scoring pipeline.
+Overview NovaScore is an AI-driven credit scoring framework that estimates short-term default risk using behavioral signals from ride activity, transactions, and user–merchant network structure. It was developed for the Grab AI National Hackathon 2025, where the team qualified through the first three rounds and narrowly missed the finals.
 
-Project Context  
-Traditional credit scoring systems rely heavily on formal banking data and often exclude new-to-credit users. NovaScore bridges this gap by learning behavioral credit signals from ride patterns, payment behaviors, and merchant transactions in a 90-day activity window.  
-The model outputs a 300–950 credit score, grouped into lending bands that can guide automated lending decisions and inclusion policies.
+Problem statement Conventional credit assessment struggles with thin-file users. The goal is to build a data-driven risk model over a 90-day observation window that captures:
 
-Key Features  
-• Hybrid deep learning pipeline integrating FT-Transformer, Temporal Convolutional Network (TCN), and LightGBM baseline models  
-• Transaction-behavioral feature engineering across 10K+ users and 160+ financial attributes  
-• Graph-based embeddings (Node2Vec) linking users and merchants to capture spending relationships  
-• Fairness-aware design reducing bias across city groups (ΔTPR < 0.04)  
-• Score banding calibrated between 300 and 950 for explainable loan approvals  
-• Modular, end-to-end pipeline built in Python and designed to run efficiently on GPU notebooks
+trip-level engagement and reliability
+transaction patterns and balances
+network effects via user–merchant relationships
+Key features
 
-Model Architecture  
-1. Feature Tokenization using FT-Transformer for tabular features  
-2. Sequential encoding via TCN blocks on weekly aggregated data  
-3. Graph embeddings generated from user-merchant networks (Node2Vec)  
-4. Fusion of tabular, sequential, and graph representations through a unified hybrid model  
-5. LightGBM baseline for benchmarking traditional ensemble performance  
-6. Scoring calibration and band assignment using logistic scaling
+90-day dynamic window with weekly buckets (about 13 time steps)
+Tabular aggregations for trips, cancellations, tips, earnings, transaction stats
+Temporal sequences modeled with a TCN over weekly aggregates
+User–merchant bipartite graph embeddings via Node2Vec (64-dim)
+FT-Transformer for tabular features with per-feature tokenization
+Hybrid fusion head that combines FT-Transformer, TCN, and graph vectors
+LightGBM baseline for comparison and quick explainability
+Probability calibration to a 300–940 NovaScore with clear decision bands
+Simple fairness audit using delta TPR across city groups
+Input data The pipeline expects two parquet files uploaded at runtime:
 
-Score Bands  
-• 800–950 : Auto-approve, large limit  
-• 700–799 : Standard approve, medium limit  
-• 600–699 : Manual review, small limit  
-• Below 600 : Decline with repayment improvement tips
+merged_trip_details_0.parquet
+transaction-0.parquet These are not included in the repo. Place them in data/raw if you want local runs, or upload via the Colab file picker when prompted.
+How it works
 
-Directory Structure  
-NovaScore-Credit-Scoring-System/  
-│  
-├── data/  
-│   ├── raw/ (uploaded source parquet files)  
-│   └── processed/ (cleaned and aggregated datasets)  
-│  
-├── notebooks/ (core pipeline script and experiments)  
-│   └── novascore_pipeline.py  
-│  
-├── src/ (optional helper modules)  
-│  
-├── assets/ (visuals, charts, reports)  
-│  
-├── docs/ (hackathon documentation and notes)  
-│  
-├── requirements.txt  
-├── LICENSE  
-├── .gitignore  
-└── README.md
+windowing: computes an anchor end date from the latest timestamp and selects the last 90 days
+labeling: marks a user positive if any transaction status indicates default/chargeback-like behavior
+tabular features: per-user sums, means, counts, cancel/incident rates, payment mix, route mix, device/merchant mix
+weekly sequences: per-user weekly aggregates for trips, distance, duration, cancellations, rating, earnings, spend, transactions, unique merchants; normalized across the window
+graph embeddings: builds a user–merchant bipartite graph and learns Node2Vec embeddings; each user gets a dense 64-d vector
+baseline model: LightGBM trains on tabular features and reports AUROC
+hybrid model: FT-Transformer encodes tabular features, TCN encodes sequences, Node2Vec encodes graph; the vectors are concatenated and passed through a dense head
+calibration: converts predicted PD to NovaScore using a logit mapping anchored at chosen PD–score pairs
+output: writes predictions_90d_full.csv with columns [user_id, y_true, pd90, novascore, decision_band, group] and also saves pred_prob_90d_full.npy and score_90d_full.npy
+Scoring policy
 
-Installation and Usage  
-1. Clone the repository  
-   git clone https://github.com/heynintendo/NovaScore-Credit-Scoring-System.git  
-   cd NovaScore-Credit-Scoring-System  
+score ≥ 800: auto-approve, large limit
+700–799: standard approve, medium limit
+600–699: manual review, small limit
+< 600: decline with repayment coaching
+Quick start (Colab or local) Colab
 
-2. Install dependencies  
-   pip install -r requirements.txt  
+open the notebook or a Python cell in Colab
+install requirements for the session and run the script
+when prompted, upload merged_trip_details_0.parquet and transaction-0.parquet
+Local
 
-3. Run the pipeline notebook or script  
-   python notebooks/novascore_pipeline.py  
+python -m venv .venv && source .venv/bin/activate (Windows: .venv\Scripts\activate)
+pip install -r requirements.txt
+run your script or notebook and point to the parquet files in data/raw
+Evaluation
 
-4. Upload the required parquet files when prompted in Colab or terminal  
-   merged_trip_details_0.parquet  
-   transaction-0.parquet  
+primary metric: AUROC
+reference: LightGBM baseline vs hybrid model
+fairness check: delta TPR across city groups
+Notes and assumptions
 
-5. The pipeline automatically performs feature engineering, model training, scoring calibration, and exports predictions as CSV and NumPy arrays.
+the script is designed to be resilient to slight schema variations and type coercions
+graph embeddings are zero-vectors for users unseen in the random walks
+calibration anchors are adjustable; defaults are chosen for a balanced score spread
+no real user data is included in this repository
+Credits Team Grabbbb Project codename: NovaScore Credit Scoring System Originally developed for the Grab AI National Hackathon 2025 (national semifinalists)
 
-Tech Stack  
-• Python (PyTorch, LightGBM, Scikit-Learn, Pandas, Numpy)  
-• Graph Embeddings (NetworkX, Node2Vec)  
-• Data Visualization (Matplotlib, Plotly)  
-• Environment: Google Colab / Jupyter / Local GPU setup  
-
-Results  
-• Achieved test AUROC of 0.89 (vs baseline 0.72)  
-• Reduced fairness gap ΔTPR from 0.12 to 0.04 across city groups  
-• Increased credit approval coverage by 29%  
-• Delivered a fully interpretable scoring engine with 3x faster decision throughput  
-
-License  
-This project is released under the MIT License. See LICENSE file for details.
-
-Contributors  
-Team Grab (Grab AI National Hackathon 2025 Semi-Finalists)    
-
-Repository Link  
-https://github.com/heynintendo/NovaScore-Credit-Scoring-System
+License MIT License
