@@ -1,0 +1,99 @@
+# =========================
+# OS / SYSTEM FILES
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# PYTHON
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.log
+*.sqlite
+*.db
+*.egg-info/
+*.egg
+*.tmp
+*.bak
+
+# =========================
+# VIRTUAL ENVIRONMENTS
+# =========================
+.env
+.venv
+venv/
+env/
+ENV/
+
+# =========================
+# NOTEBOOKS / COLAB
+# =========================
+.ipynb_checkpoints/
+*.ipynb_convert/
+*.ipynb_save/
+*.nbconvert.ipynb
+
+# =========================
+# DATA FILES
+# (Keep only .gitkeep placeholders)
+# =========================
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# =========================
+# LARGE ARTIFACTS / MODEL FILES
+# =========================
+*.parquet
+*.parquett
+*.csv
+*.tsv
+*.feather
+*.json
+*.npy
+*.npz
+*.h5
+*.pt
+*.pth
+*.onnx
+*.joblib
+*.sav
+*.tar
+*.zip
+*.gz
+*.bz2
+*.7z
+*.rar
+
+# =========================
+# OUTPUTS / CHECKPOINTS
+# =========================
+outputs/
+artifacts/
+checkpoints/
+logs/
+runs/
+cache/
+tmp/
+
+# =========================
+# EDITOR / IDE SETTINGS
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# OS / UTILITY
+# =========================
+nohup.out
+*.out
+*.log
+*.bak
