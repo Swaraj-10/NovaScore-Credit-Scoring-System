@@ -1,0 +1,2 @@
+This folder stores the original raw input parquet files used for model training and testing.
+Keep this folder empty in the repository (no actual data should be committed).
