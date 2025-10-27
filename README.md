@@ -62,5 +62,6 @@ graph embeddings are zero-vectors for users unseen in the random walks
 calibration anchors are adjustable; defaults are chosen for a balanced score spread
 no real user data is included in this repository
 Credits Team Grabbbb Project codename: NovaScore Credit Scoring System Originally developed for the Grab AI National Hackathon 2025 (national semifinalists)
+Youtube Video:-https://youtu.be/tunNvJc6hN0
 
 License MIT License
